@@ -1,6 +1,7 @@
 package clientapi.API.service.impl;
 
 import clientapi.API.model.dao.ClientDAO;
+import clientapi.API.model.dto.ClientDto;
 import clientapi.API.model.entity.Client;
 import clientapi.API.service.IClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,13 @@ public class ClientImpl implements IClient {
 
     @Transactional
     @Override
-    public Client save(Client client) {
+    public Client save(ClientDto clientDto) {
+        Client client = Client.builder().idClient(clientDto.getIdClient())
+                .name(clientDto.getName())
+                .surname(clientDto.getSurname())
+                .registerDate(clientDto.getRegisterDate())
+                .email(clientDto.getEmail())
+                .build();
         return clientDao.save(client);
     }
     @Transactional(readOnly = true)
@@ -27,6 +34,8 @@ public class ClientImpl implements IClient {
     @Transactional
     @Override
     public void delete(Client client) {
+
+
         clientDao.delete(client);
     }
 }

@@ -1,4 +1,5 @@
 package clientapi.API.controller;
+import clientapi.API.model.dto.ClientDto;
 import clientapi.API.model.entity.Client;
 import clientapi.API.service.IClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +21,32 @@ public class ClientController {
 
     @PostMapping("client")
     @ResponseStatus(HttpStatus.CREATED)
-    public Client create(@RequestBody Client client) {
-        return clientService.save(client);
+    public ClientDto create(@RequestBody ClientDto clientDto) {
+
+        Client clientSave = clientService.save(clientDto);
+
+        return ClientDto.builder().idClient(clientSave.getIdClient())
+                .name(clientSave.getName())
+                .surname(clientSave.getSurname())
+                .registerDate(clientSave.getRegisterDate())
+                .email(clientSave.getEmail())
+                .build();
+
     }
 
     @PutMapping("client")
     @ResponseStatus(HttpStatus.CREATED)
-    public Client update(@RequestBody Client client) {
-        return clientService.save(client);
+    public ClientDto update(@RequestBody ClientDto clientDto) {
+
+        Client clientUpdate = clientService.save(clientDto);
+
+        return ClientDto.builder().idClient(clientUpdate.getIdClient())
+                .name(clientUpdate.getName())
+                .surname(clientUpdate.getSurname())
+                .registerDate(clientUpdate.getRegisterDate())
+                .email(clientUpdate.getEmail())
+                .build();
+
     }
 
     @DeleteMapping("client/{id}")
@@ -36,7 +55,7 @@ public class ClientController {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            Client clientDelete = clientService.findById(id);
+           Client  clientDelete = clientService.findById(id);
             clientService.delete(clientDelete);
             return new ResponseEntity<>(clientDelete, HttpStatus.NO_CONTENT);
         } catch (DataAccessException exDt){
@@ -51,8 +70,14 @@ public class ClientController {
 
     @GetMapping("client/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Client showById(@PathVariable Integer id) {
-        return clientService.findById(id);
+    public ClientDto showById(@PathVariable Integer id) {
+        Client client = clientService.findById(id);
+        return ClientDto.builder().idClient(client.getIdClient())
+                .name(client.getName())
+                .surname(client.getSurname())
+                .registerDate(client.getRegisterDate())
+                .email(client.getEmail())
+                .build();
 
     }
 
