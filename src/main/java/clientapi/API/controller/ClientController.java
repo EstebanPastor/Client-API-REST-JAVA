@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1")
 public class ClientController {
@@ -16,6 +18,18 @@ public class ClientController {
     @Autowired
     private IClientService clientService;
 
+    @GetMapping("clients")
+
+    public ResponseEntity<?> showAll() {
+
+      List<Client> getList = clientService.listAll();
+
+        if( getList == null) {
+            return new ResponseEntity<>(ResponseMessage.builder().message("There are no registers").object(null).build(), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(ResponseMessage.builder().message("Client:").object(getList).build(), HttpStatus.OK);
+    }
     @PostMapping("client")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> create(@RequestBody ClientDto clientDto) {
