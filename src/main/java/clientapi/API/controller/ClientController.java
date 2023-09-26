@@ -2,23 +2,19 @@ package clientapi.API.controller;
 import clientapi.API.model.dto.ClientDto;
 import clientapi.API.model.entity.Client;
 import clientapi.API.model.payload.ResponseMessage;
-import clientapi.API.service.IClient;
+import clientapi.API.service.IClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
 @RestController
 @RequestMapping("/api/v1")
 public class ClientController {
 
     @Autowired
-    private IClient clientService;
+    private IClientService clientService;
 
     @PostMapping("client")
     @ResponseStatus(HttpStatus.CREATED)
@@ -39,21 +35,26 @@ public class ClientController {
         }
     }
 
-    @PutMapping("client")
-    public ResponseEntity<?> update(@RequestBody ClientDto clientDto) {
+    @PutMapping("client/{id}")
+    public ResponseEntity<?> update(@RequestBody ClientDto clientDto, @PathVariable Integer id) {
 
         Client clientUpdate = null;
         try {
-            clientUpdate = clientService.save(clientDto);
-            return new ResponseEntity<>(ResponseMessage.builder().message("Successfully saved").object(ClientDto.builder().idClient(clientUpdate.getIdClient())
-                    .name(clientUpdate.getName())
-                    .surname(clientUpdate.getSurname())
-                    .registerDate(clientUpdate.getRegisterDate())
-                    .email(clientUpdate.getEmail())
-                    .build())
-.build(), HttpStatus.CREATED);
+            if(clientService.existsById(id)){
+                clientDto.setIdClient(id);
+                clientUpdate = clientService.save(clientDto);
+                return new ResponseEntity<>(ResponseMessage.builder().message("Successfully saved").object(ClientDto.builder().idClient(clientUpdate.getIdClient())
+                                .name(clientUpdate.getName())
+                                .surname(clientUpdate.getSurname())
+                                .registerDate(clientUpdate.getRegisterDate())
+                                .email(clientUpdate.getEmail())
+                                .build())
+                        .build(), HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>(ResponseMessage.builder().message("The register doesnt exist").object(null).build(), HttpStatus.NOT_FOUND);
+            }
         } catch (DataAccessException exDt) {
-            return new ResponseEntity<>(ResponseMessage.builder().message(exDt.getMessage()).object(null).build(), HttpStatus.METHOD_NOT_ALLOWED);
+            return new ResponseEntity<>(ResponseMessage.builder().message(exDt.getMessage()).object(null).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @DeleteMapping("client/{id}")

@@ -3,14 +3,14 @@ package clientapi.API.service.impl;
 import clientapi.API.model.dao.ClientDAO;
 import clientapi.API.model.dto.ClientDto;
 import clientapi.API.model.entity.Client;
-import clientapi.API.service.IClient;
+import clientapi.API.service.IClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-public class ClientImpl implements IClient {
+public class ClientImpl implements IClientService {
 
     @Autowired
     private ClientDAO clientDao;
@@ -37,5 +37,10 @@ public class ClientImpl implements IClient {
 
 
         clientDao.delete(client);
+    }
+
+    @Override
+    public boolean existsById(Integer id) {
+        return clientDao.existsById(id);
     }
 }
